@@ -22,6 +22,7 @@ pip install virtualenv
 
 # For Windows
 python -m venv venv
+--------------------
 venv\Scripts\activate
 
 # For macOS/Linux
