@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المدير</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>لوحة تحكم المدير</h1>
+        <a href="{% url 'logout' %}">تسجيل الخروج</a>
+        <h2>إدارة المستخدمين</h2>
+        <form method="post" action="{% url 'add_user' %}">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="اسم المستخدم" required>
+            <input type="password" name="password" placeholder="كلمة المرور" required>
+            <button type="submit">إضافة مستخدم</button>
+        </form>
+        <!-- إضافة أي ميزات أخرى لإدارة المستخدمين -->
+    </div>
+</body>
+</html>

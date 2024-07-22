@@ -1,5 +1,13 @@
 import os
 
+# في ملف settings.py
+from django.urls import reverse_lazy
+
+LOGIN_URL = reverse_lazy('login')
+LOGIN_REDIRECT_URL = reverse_lazy('some_view_name')  # استبدل some_view_name باسم العرض الذي تريد إعادة التوجيه إليه بعد تسجيل الدخول
+LOGOUT_REDIRECT_URL = reverse_lazy('login')
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'django-insecure-)9a^pb@_v0w8)j)(ee&(=8forl@zpem@ow)_m6m7zdg4ddig00'
