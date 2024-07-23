@@ -8,7 +8,7 @@ from django.db.models import Sum
 from django.urls import reverse
 from django.http import HttpResponse
 from io import BytesIO
-from xhtml2pdf import pisa
+from datetime import datetime
 
 def home_view(request):
     return render(request, 'pricing/home.html')
@@ -26,7 +26,7 @@ def login_view(request):
                 if user.is_staff:  # Check if the user is an admin
                     return redirect('admin_dashboard')
                 else:
-                    return redirect('offer_form')
+                    return redirect('offer_detail')
             else:
                 # Invalid login
                 return render(request, 'pricing/login.html', {'error': 'Invalid username or password'})
@@ -68,6 +68,16 @@ def add_user_view(request):
 
 @login_required
 def offer_detail_view(request):
+    if request.method == 'POST':
+        offer_form = OfferForm(request.POST)
+        if offer_form.is_valid():
+            offer = offer_form.save(commit=False)
+            offer.date = datetime.now()
+            offer.save()
+            return redirect('offer_detail')
+    else:
+        offer_form = OfferForm()
+
     try:
         offer = Offer.objects.get(pk=1)  # Replace with your logic to fetch the offer
         total_price = offer.offerdetail_set.aggregate(total=Sum('total_price'))['total']
@@ -77,57 +87,13 @@ def offer_detail_view(request):
 
     context = {
         'offer': offer,
+        'offer_form': offer_form,
         'total_price': total_price,
     }
     return render(request, 'pricing/offer_detail.html', context)
 
 
-@login_required
-def offer_form_view(request):
-    if request.method == 'POST':
-        offer_form = OfferForm(request.POST)
-        service_form = ServiceForm(request.POST)
-        offer_detail_form = OfferDetailForm(request.POST)
 
-        if offer_form.is_valid() and service_form.is_valid() and offer_detail_form.is_valid():
-            offer = offer_form.save()
-            service = service_form.save()
-            offer_detail = offer_detail_form.save(commit=False)
-            offer_detail.offer = offer
-            offer_detail.service = service
-            offer_detail.save()
-            return redirect('offer_detail')
-    else:
-        offer_form = OfferForm()
-        service_form = ServiceForm()
-        offer_detail_form = OfferDetailForm()
-
-    return render(request, 'pricing/offer_form.html', {
-        'offer_form': offer_form,
-        'service_form': service_form,
-        'offer_detail_form': offer_detail_form,
-    })
-
-
-@login_required
-def generate_pdf_view(request):
-    try:
-        offer = Offer.objects.get(pk=1)  # Replace with your logic to fetch the offer
-        total_price = offer.offerdetail_set.aggregate(total=Sum('total_price'))['total']
-    except Offer.DoesNotExist:
-        offer = None
-        total_price = 0
-
-    context = {
-        'offer': offer,
-        'total_price': total_price,
-    }
-
-    html = render_to_string('pricing/offer_detail_pdf.html', context)
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="offer.pdf"'
-    pisa.CreatePDF(BytesIO(html.encode('utf-8')), dest=response)
-    return response
 
 
 

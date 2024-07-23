@@ -3,11 +3,11 @@ from django import forms
 from .models import OfferDetail, Service, Offer
 
 class OfferDetailForm(forms.ModelForm):
-    #offer = forms.ModelChoiceField(queryset=Offer.objects.all(), label='Offer')
-    #service = forms.ModelChoiceField(queryset=Service.objects.all(), label='Service')
+    offer = forms.ModelChoiceField(queryset=Offer.objects.all(), label='Offer')
+    service = forms.ModelChoiceField(queryset=Service.objects.all(), label='Service')
     class Meta:
         model = OfferDetail
-        fields = ['quantity', 'total_price']
+        fields = ['offer', 'service','quantity', 'total_price']
         #['offer', 'service',]
         widgets = {
             'total_price': forms.TextInput(attrs={'readonly': 'readonly'}),
@@ -29,7 +29,10 @@ class ServiceForm(forms.ModelForm):
 class OfferForm(forms.ModelForm):
     class Meta:
         model = Offer
-        fields = ['client_name', 'client_address', 'date']
+        fields = ['client_name', 'client_address']
+        widgets = {
+            'date' : forms.HiddenInput(),
+        }
 
 
 class LoginForm(forms.Form):

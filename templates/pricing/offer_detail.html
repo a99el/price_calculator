@@ -47,15 +47,23 @@
             <img src="{% static 'images/Awon_logo.png' %}" alt="Logo">
             <h1>عرض مالي</h1>
         </div>
-        <table class="details">
-            <tr>
-                <td>السادة: {{ offer.client_name }}</td>
-                <td>التاريخ: {{ offer.date }}</td>
-            </tr>
-            <tr>
-                <td colspan="2">عنوان العميل: {{ offer.client_address }}</td>
-            </tr>
-        </table>
+        <form method="post">
+            {% csrf_token %}
+            <table class="details">
+                <tr>
+                    <td>السادة:</td>
+                    <td>{{ offer_form.client_name }}</td>
+                </tr>
+                <tr>
+                    <td>عنوان العميل:</td>
+                    <td>{{ offer_form.client_address }}</td>
+                </tr>
+                <tr>
+                    <td>التاريخ:</td>
+                    <td>{{ offer.date }}</td>
+                </tr>
+            </table>
+
         <table class="table">
             <thead>
                 <tr>
@@ -115,6 +123,8 @@
                 </tr>
             </tbody>
         </table>
+    <button type="submit">حفظ</button>
+        </form>
     </div>
     <script src="{% static 'js/script.js' %}"></script>
 </body>
