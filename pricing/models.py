@@ -16,8 +16,8 @@ class Offer(models.Model):
         return self.client_name
 
 class OfferDetail(models.Model):
-    offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    #offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
+    #service = models.ForeignKey(Service, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
 

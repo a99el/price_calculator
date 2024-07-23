@@ -10,15 +10,29 @@
 <body>
     <div class="container">
         <h1>لوحة تحكم المدير</h1>
-        <a href="{% url 'logout' %}">تسجيل الخروج</a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">تسجيل الخروج</button>
+        </form>
         <h2>إدارة المستخدمين</h2>
-        <form method="post" action="{% url 'add_user' %}">
+        <form method="post" action="{% url 'admin_dashboard' %}">
             {% csrf_token %}
             <input type="text" name="username" placeholder="اسم المستخدم" required>
             <input type="password" name="password" placeholder="كلمة المرور" required>
             <button type="submit">إضافة مستخدم</button>
         </form>
-        <!-- إضافة أي ميزات أخرى لإدارة المستخدمين -->
+       <h2>قائمة المستخدمين</h2>
+        <ul>
+            {% for user in users %}
+                <li>
+                    {{ user.username }}
+                    <form method="post" action="{% url 'delete_user' user.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">حذف</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>

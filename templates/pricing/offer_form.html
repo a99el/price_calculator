@@ -1,0 +1,42 @@
+<!-- templates/pricing/offer_form.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج العرض المالي</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script>
+        function calculateTotalPrice() {
+            var price = document.getElementById('id_service').selectedOptions[0].getAttribute('data-price');
+            var quantity = document.getElementById('id_quantity').value;
+            if (price && quantity) {
+                var totalPrice = price * quantity;
+                document.getElementById('id_total_price').value = totalPrice.toFixed(2);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>نموذج العرض المالي</h1>
+        <form method="post">
+            {% csrf_token %}
+            <h2>بيانات العميل</h2>
+            {{ offer_form.as_p }}
+
+            <h2>بيانات الخدمة</h2>
+            {{ service_form.as_p }}
+
+            <h2>تفاصيل العرض</h2>
+            {{ offer_detail_form.as_p }}
+
+            <button type="submit">حفظ</button>
+        </form>
+        <form method="get" action="{% url 'generate_pdf' %}">
+            <button type="submit">طباعة</button>
+        </form>
+    </div>
+</body>
+</html>
