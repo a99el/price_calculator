@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 from io import BytesIO
 from datetime import datetime
+from django.utils import timezone
 
 def home_view(request):
     return render(request, 'pricing/home.html')
@@ -68,27 +69,16 @@ def add_user_view(request):
 
 @login_required
 def offer_detail_view(request):
-    if request.method == 'POST':
-        offer_form = OfferForm(request.POST)
-        if offer_form.is_valid():
-            offer = offer_form.save(commit=False)
-            offer.date = datetime.now()
-            offer.save()
-            return redirect('offer_detail')
-    else:
-        offer_form = OfferForm()
-
-    try:
-        offer = Offer.objects.get(pk=1)  # Replace with your logic to fetch the offer
-        total_price = offer.offerdetail_set.aggregate(total=Sum('total_price'))['total']
-    except Offer.DoesNotExist:
-        offer = None
-        total_price = 0
+    offer_form = OfferForm()
+    offer = None
+    total_price = 0
+    current_date = timezone.now().strftime('%Y-%m-%d')
 
     context = {
         'offer': offer,
         'offer_form': offer_form,
         'total_price': total_price,
+        'current_date': current_date
     }
     return render(request, 'pricing/offer_detail.html', context)
 

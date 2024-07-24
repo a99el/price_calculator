@@ -23,9 +23,15 @@
             border-collapse: collapse;
             margin-top: 20px;
         }
-        .table th, .table td, .footer-table th, .footer-table td {
+        .details th, .details td, .table th, .table td, .footer-table th, .footer-table td {
             border: 1px solid #ddd;
             padding: 8px;
+        }
+        .details th {
+            background-color: #f2f2f2;
+        }
+        .details td {
+            background-color: #f9f9f9;
         }
         .table th {
             background-color: #f2f2f2;
@@ -39,6 +45,11 @@
         .header img {
             width: 100px;  /* Adjust this size as needed */
         }
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -51,79 +62,78 @@
             {% csrf_token %}
             <table class="details">
                 <tr>
-                    <td>السادة:</td>
-                    <td>{{ offer_form.client_name }}</td>
+                    <th>السادة:</th>
+                    <td><input type="text" class="input-field" name="client_name" value="{% if offer_form.client_name.value %}{{ offer_form.client_name.value }}{% endif %}"></td>
+                </tr>
+                 <tr>
+                    <th>التاريخ:</th>
+                    <td>{{ current_date }}</td> <!-- عرض التاريخ الحالي -->
                 </tr>
                 <tr>
-                    <td>عنوان العميل:</td>
-                    <td>{{ offer_form.client_address }}</td>
-                </tr>
-                <tr>
-                    <td>التاريخ:</td>
-                    <td>{{ offer.date }}</td>
+                    <th>عنوان العميل:</th>
+                    <td><input type="text" class="input-field" name="client_address" value="{% if offer_form.client_address.value %}{{ offer_form.client_address.value }}{% endif %}"></td>
                 </tr>
             </table>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>رقم البند</th>
-                    <th>الخدمة</th>
-                    <th>سعر الخدمة</th>
-                    <th>الكمية</th>
-                    <th>السعر الإجمالي</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for detail in offer.offerdetail_set.all %}
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ detail.service.name }}</td>
-                        <td>{{ detail.service.price }}</td>
-                        <td>{{ detail.quantity }}</td>
-                        <td>{{ detail.total_price }}</td>
+                        <th>رقم البند</th>
+                        <th>الخدمة</th>
+                        <th>سعر الخدمة</th>
+                        <th>الكمية</th>
+                        <th>السعر الإجمالي</th>
                     </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="4">السعر الإجمالي</td>
-                    <td>{{ total_price }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="footer-table">
-            <thead>
-                <tr>
-                    <th>بيان</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1. الأسعار الموضحة في الجدول بالريال السعودي.</td>
-                </tr>
-                <tr>
-                    <td>2. العرض صالح لمدة 7 أيام من تاريخ العرض.</td>
-                </tr>
-                <tr>
-                    <td>3. علماً بأن تمديد فترة استمرارية الدعم الفني يتطلب رسوم إضافية.</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="footer-table">
-            <thead>
-                <tr>
-                    <th>سياسة الدفع</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1. يتم تحويل المبلغ على حسب الدفعات التالية: 50% كدفعة أولى، 30% كدفعة ثانية، 20% كدفعة ثالثة.</td>
-                </tr>
-                <tr>
-                    <td>2. يتم تحويل المبلغ إلى حساب جمعية عون التقنية - البنك الأهلي - IBAN: SA3310000000020000444207</td>
-                </tr>
-            </tbody>
-        </table>
-    <button type="submit">حفظ</button>
+                </thead>
+                <tbody>
+                    {% for detail in offer.offerdetail_set.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ detail.service.name }}</td>
+                            <td>{{ detail.service.price }}</td>
+                            <td>{{ detail.quantity }}</td>
+                            <td>{{ detail.total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4">السعر الإجمالي</td>
+                        <td>{{ total_price }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="footer-table">
+                <thead>
+                    <tr>
+                        <th>بيان</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1. الأسعار الموضحة في الجدول بالريال السعودي.</td>
+                    </tr>
+                    <tr>
+                        <td>2. العرض صالح لمدة 7 أيام من تاريخ العرض.</td>
+                    </tr>
+                    <tr>
+                        <td>3. علماً بأن تمديد فترة استمرارية الدعم الفني يتطلب رسوم إضافية.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="footer-table">
+                <thead>
+                    <tr>
+                        <th>سياسة الدفع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1. يتم تحويل المبلغ على حسب الدفعات التالية: 50% كدفعة أولى، 30% كدفعة ثانية، 20% كدفعة ثالثة.</td>
+                    </tr>
+                    <tr>
+                        <td>2. يتم تحويل المبلغ إلى حساب جمعية عون التقنية - البنك الأهلي - IBAN: SA3310000000020000444207</td>
+                    </tr>
+                </tbody>
+            </table>
         </form>
     </div>
     <script src="{% static 'js/script.js' %}"></script>
