@@ -1,4 +1,3 @@
-# في ملف price_calculator/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
@@ -12,4 +11,6 @@ urlpatterns = [
     path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('offer_detail/', views.offer_detail_view, name='offer_detail'),
     path('add_user/', views.add_user_view, name='add_user'),
+    path('delete_user/<int:user_id>/', views.delete_user_view, name='delete_user'),
+    path('pricing/', include('pricing.urls')),  # تضمين مسارات تطبيق pricing
 ]

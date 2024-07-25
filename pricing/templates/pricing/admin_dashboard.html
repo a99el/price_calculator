@@ -6,19 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم المدير</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <h1>لوحة تحكم المدير</h1>
-        <a href="{% url 'logout' %}">تسجيل الخروج</a>
+        <form method="post" action="{% url 'pricing:logout' %}">
+            {% csrf_token %}
+            <button type="submit">تسجيل الخروج</button>
+        </form>
+
         <h2>إدارة المستخدمين</h2>
-        <form method="post" action="{% url 'add_user' %}">
+        <form method="post" action="{% url 'pricing:admin_dashboard' %}">
             {% csrf_token %}
             <input type="text" name="username" placeholder="اسم المستخدم" required>
             <input type="password" name="password" placeholder="كلمة المرور" required>
             <button type="submit">إضافة مستخدم</button>
         </form>
-        <!-- إضافة أي ميزات أخرى لإدارة المستخدمين -->
+
+        <h2>قائمة المستخدمين</h2>
+        <ul>
+            {% for user in users %}
+                <li>
+                    {{ user.username }}
+                    <form method="post" action="{% url 'pricing:delete_user' user.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">حذف</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h2>تعديل بيان العرض المالي</h2>
+        <form method="post" action="{% url 'pricing:update_statement' %}">
+            {% csrf_token %}
+            <textarea name="statement_1" placeholder="بيان 1">{{ statement_1 }}</textarea>
+            <textarea name="statement_2" placeholder="بيان 2">{{ statement_2 }}</textarea>
+            <textarea name="statement_3" placeholder="بيان 3">{{ statement_3 }}</textarea>
+            <button type="submit">حفظ التعديلات</button>
+        </form>
     </div>
 </body>
 </html>

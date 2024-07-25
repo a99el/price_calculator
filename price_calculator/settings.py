@@ -3,6 +3,9 @@ import os
 # في ملف settings.py
 from django.urls import reverse_lazy
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
 LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('some_view_name')  # استبدل some_view_name باسم العرض الذي تريد إعادة التوجيه إليه بعد تسجيل الدخول
 LOGOUT_REDIRECT_URL = reverse_lazy('login')

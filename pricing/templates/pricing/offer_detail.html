@@ -7,55 +7,160 @@
     <title>عرض مالي</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
             direction: rtl;
         }
         .container {
-            width: 70%;
-            margin: 0 auto;
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
         }
         .header, .footer {
             text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            width: 120px;
+        }
+        .header h1 {
+            font-size: 2em;
+            margin: 10px 0;
+            color: #007bff;
         }
         .details, .table, .footer-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin: 20px 0;
         }
-        .table th, .table td, .footer-table th, .footer-table td {
+        .details th, .details td, .table th, .table td, .footer-table th, .footer-table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
+            text-align: center;
         }
-        .table th {
+        .details th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .details td {
             background-color: #f2f2f2;
+
         }
-        .footer-table th {
-            background-color: #f2f2f2;
+        .table th, .footer-table th {
+            background-color: #343a40;
+            color: #fff;
+
         }
-        .footer-table {
-            margin-top: 40px;
-        }
-        .header img {
-            width: 100px;  /* Adjust this size as needed */
-        }
-    </style>
+        .table td, .footer-table td {
+background-color: #e9ecef;
+            text-align: right;
+}
+.input-field {
+width: 95%;
+padding: 8px;
+box-sizing: border-box;
+border: 1px solid #ced4da;
+border-radius: 4px;
+}
+.add-row-btn, .edit-btn, .save-btn, .delete-row-btn {
+padding: 10px 20px;
+border: none;
+cursor: pointer;
+margin-top: 10px;
+border-radius: 4px;
+}
+.add-row-btn {
+background-color: #28a745;
+color: white;
+}
+.add-row-btn
+{
+background-color: #218838;
+}
+.delete-row-btn {
+background-color: #dc3545;
+color: white;
+}
+.delete-row-btn
+{
+background-color: #c82333;
+}
+.edit-btn {
+background-color: #17a2b8;
+color: white;
+}
+.edit-btn
+{
+background-color: #138496;
+}
+.save-btn {
+background-color: #ffc107;
+color: white;
+display: none;
+}
+.save-btn
+{
+background-color: #e0a800;
+}
+.total-amount {
+margin-top: 20px;
+font-size: 1.5em;
+font-weight: bold;
+text-align: right;
+}
+.total-row td {
+font-weight: bold;
+}
+.total-label {
+text-align: right;
+}
+.download-btn {
+position: fixed;
+top: 20px;
+left: 20px;
+padding: 10px 20px;
+background-color: #007bff;
+color: white;
+border: none;
+cursor: pointer;
+border-radius: 4px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.download-btn
+{
+background-color: #0056b3;
+}
+</style>
+
 </head>
 <body>
     <div class="container">
+        <button class="download-btn" onclick="downloadPDF()">تنزيل PDF</button>
         <div class="header">
             <img src="{% static 'images/Awon_logo.png' %}" alt="Logo">
             <h1>عرض مالي</h1>
         </div>
-        <table class="details">
-            <tr>
-                <td>السادة: {{ offer.client_name }}</td>
-                <td>التاريخ: {{ offer.date }}</td>
-            </tr>
-            <tr>
-                <td colspan="2">عنوان العميل: {{ offer.client_address }}</td>
-            </tr>
-        </table>
-        <table class="table">
+        <form method="post">
+            {% csrf_token %}
+            <table class="details">
+                <tr>
+                    <th>السادة:</th>
+                    <td><input type="text" class="input-field" name="client_name" value="{% if offer_form.client_name.value %}{{ offer_form.client_name.value }}{% endif %}"></td>
+                </tr>
+                <tr>
+                    <th>التاريخ:</th>
+                    <td>{{ current_date }}</td>
+                </tr>
+                <tr>
+                    <th>عنوان العميل:</th>
+                    <td><input type="text" class="input-field" name="client_address" value="{% if offer_form.client_address.value %}{{ offer_form.client_address.value }}{% endif %}"></td>
+                </tr>
+            </table>
+                <table class="table" id="offer-table">
             <thead>
                 <tr>
                     <th>رقم البند</th>
@@ -63,24 +168,31 @@
                     <th>سعر الخدمة</th>
                     <th>الكمية</th>
                     <th>السعر الإجمالي</th>
+                    <th>حذف</th>
                 </tr>
             </thead>
             <tbody>
                 {% for detail in offer.offerdetail_set.all %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
-                        <td>{{ detail.service.name }}</td>
-                        <td>{{ detail.service.price }}</td>
-                        <td>{{ detail.quantity }}</td>
-                        <td>{{ detail.total_price }}</td>
+                        <td><input type="text" class="input-field service-name" name="service_name_{{ forloop.counter }}" value="{{ detail.service.name }}"></td>
+                        <td><input type="number" class="input-field service-price" name="service_price_{{ forloop.counter }}" value="{{ detail.service.price }}"></td>
+                        <td><input type="number" class="input-field quantity" name="quantity_{{ forloop.counter }}" value="{{ detail.quantity }}"></td>
+                        <td class="total-price">{{ detail.total_price }}</td>
+                        <td><button type="button" class="delete-row-btn" onclick="deleteRow(this)">حذف</button></td>
                     </tr>
                 {% endfor %}
-                <tr>
-                    <td colspan="4">السعر الإجمالي</td>
-                    <td>{{ total_price }}</td>
-                </tr>
             </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="4" class="total-label">السعر الإجمالي</td>
+                    <td id="total-amount">0.00</td>
+                    <td></td>
+                </tr>
+            </tfoot>
         </table>
+        <button type="button" class="add-row-btn" onclick="addRow()">إضافة</button>
+
         <table class="footer-table">
             <thead>
                 <tr>
@@ -89,16 +201,19 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>1. الأسعار الموضحة في الجدول بالريال السعودي.</td>
+                    <td>{{ statement_1 }}</td>
                 </tr>
                 <tr>
-                    <td>2. العرض صالح لمدة 7 أيام من تاريخ العرض.</td>
+                    <td>{{ statement_2 }}</td>
                 </tr>
                 <tr>
-                    <td>3. علماً بأن تمديد فترة استمرارية الدعم الفني يتطلب رسوم إضافية.</td>
+                    <td>{{ statement_3 }}</td>
                 </tr>
             </tbody>
         </table>
+
+        <div class="total-amount" id="total-amount"></div>
+
         <table class="footer-table">
             <thead>
                 <tr>
@@ -107,14 +222,114 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>1. يتم تحويل المبلغ على حسب الدفعات التالية: 50% كدفعة أولى، 30% كدفعة ثانية، 20% كدفعة ثالثة.</td>
+                    <td><span id="payment_policy_1">1. يتم تحويل المبلغ على حسب الدفعات التالية: 50% كدفعة أولى، 30% كدفعة ثانية، 20% كدفعة ثالثة.</span><input type="text" class="input-field" name="payment_policy_1" value="1. يتم تحويل المبلغ على حسب الدفعات التالية: 50% كدفعة أولى، 30% كدفعة ثانية، 20% كدفعة ثالثة." style="display: none;"></td>
                 </tr>
                 <tr>
-                    <td>2. يتم تحويل المبلغ إلى حساب جمعية عون التقنية - البنك الأهلي - IBAN: SA3310000000020000444207</td>
+                    <td><span id="payment_policy_2">2. يتم تحويل المبلغ إلى حساب جمعية عون التقنية - البنك الأهلي - IBAN: SA3310000000020000444207</span><input type="text" class="input-field" name="payment_policy_2" value="2. يتم تحويل المبلغ إلى حساب جمعية عون التقنية - البنك الأهلي - IBAN: SA3310000000020000444207" style="display: none;"></td>
                 </tr>
             </tbody>
         </table>
-    </div>
-    <script src="{% static 'js/script.js' %}"></script>
+        <button type="button" class="edit-btn" onclick="editPaymentPolicies()">تعديل</button>
+        <button type="button" class="save-btn" onclick="savePaymentPolicies()">حفظ</button>
+    </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+<script>
+    function addRow() {
+        const table = document.getElementById('offer-table').getElementsByTagName('tbody')[0];
+        const rowCount = table.rows.length + 1;
+        const newRow = table.insertRow(-1);
+
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        const cell3 = newRow.insertCell(2);
+        const cell4 = newRow.insertCell(3);
+        const cell5 = newRow.insertCell(4);
+        const cell6 = newRow.insertCell(5);
+
+        cell1.innerHTML = rowCount;
+        cell2.innerHTML = '<input type="text" class="input-field service-name">';
+        cell3.innerHTML = '<input type="number" class="input-field service-price">';
+        cell4.innerHTML = '<input type="number" class="input-field quantity">';
+        cell5.className = 'total-price';
+        cell5.innerHTML = '0';
+        cell6.innerHTML = '<button type="button" class="delete-row-btn" onclick="deleteRow(this)">حذف</button>';
+
+        const servicePriceInput = cell3.getElementsByTagName('input')[0];
+        const quantityInput = cell4.getElementsByTagName('input')[0];
+        servicePriceInput.addEventListener('input', updateTotalPrice);
+        quantityInput.addEventListener('input', updateTotalPrice);
+    }
+
+    function deleteRow(button) {
+        const row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        updateTotalAmount();
+    }
+
+    function updateTotalPrice(event) {
+        const input = event.target;
+        const row = input.closest('tr');
+        const servicePrice = parseFloat(row.querySelector('.service-price').value) || 0;
+        const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+        const totalPrice = servicePrice * quantity;
+        row.querySelector('.total-price').innerText = totalPrice.toFixed(2);
+        updateTotalAmount();
+    }
+
+    function updateTotalAmount() {
+        const totalPrices = document.querySelectorAll('.total-price');
+        let totalAmount = 0;
+        totalPrices.forEach(function (totalPrice) {
+            totalAmount += parseFloat(totalPrice.innerText) || 0;
+        });
+        document.getElementById('total-amount').innerText = totalAmount.toFixed(2);
+    }
+
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.text('عرض مالي', 10, 10);
+        doc.autoTable({ html: '#offer-table' });
+
+        doc.save('financial_offer.pdf');
+    }
+
+    function editPaymentPolicies() {
+        const spans = document.querySelectorAll('span[id^="payment_policy_"]');
+        const inputs = document.querySelectorAll('input[name^="payment_policy_"]');
+        spans.forEach(function(span) {
+            span.style.display = 'none';
+        });
+        inputs.forEach(function(input) {
+            input.style.display = 'block';
+        });
+        document.querySelector('.save-btn').style.display = 'block';
+        document.querySelector('.edit-btn').style.display = 'none';
+    }
+
+    function savePaymentPolicies() {
+        const spans = document.querySelectorAll('span[id^="payment_policy_"]');
+        const inputs = document.querySelectorAll('input[name^="payment_policy_"]');
+        spans.forEach(function(span, index) {
+            span.innerText = inputs[index].value;
+            span.style.display = 'block';
+        });
+        inputs.forEach(function(input) {
+            input.style.display = 'none';
+        });
+        document.querySelector('.save-btn').style.display = 'none';
+        document.querySelector('.edit-btn').style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotalAmount();
+        document.querySelectorAll('.service-price, .quantity').forEach(function(input) {
+            input.addEventListener('input', updateTotalPrice);
+        });
+    });
+</script>
 </body>
 </html>

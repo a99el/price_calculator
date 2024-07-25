@@ -1,5 +1,4 @@
 {% load static %}
-<!-- في ملف templates/pricing/home.html -->
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -7,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الصفحة الرئيسية</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
+        <img src="{% static 'images/Awon_logo.png' %}" alt="Logo">
         <h1>مرحبًا بكم في تطبيق عرض الأسعار</h1>
         <a href="{% url 'login' %}">تسجيل الدخول</a>
     </div>
